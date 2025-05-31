@@ -2,162 +2,49 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>531</title>
+  <title>黑白动画-分步引导效果</title>
   <style>
     html, body {
       width: 100vw; height: 100vh; margin: 0; padding: 0; background: #000; overflow: hidden;
       font-family: "FZKai-Z03", "KaiTi", "STKaiti", "楷体", "LXGW WenKai", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-      font-size: 2.3vw;
-      color: #222;
-      font-weight: normal;
-      letter-spacing: 0.08em;
-      line-height: 1.33;
-      text-align: center;
-      text-shadow: none;
-      user-select: none;
+      font-size: 2.3vw; color: #222; font-weight: normal; letter-spacing: 0.08em; line-height: 1.33; text-align: center;
+      text-shadow: none; user-select: none;
     }
-    .anim-img {
-      width: 100vw; height: 100vh; object-fit: contain; display: block;
-      position: fixed; left: 0; top: 0; z-index: 10;
-      opacity: 0; transition: opacity 0.6s cubic-bezier(.4,0,.2,1);
-      background: #000;
-    }
-    #transition-mask {
-      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1000;
-      background: #fff;
-      opacity: 1; transition: opacity 0.36s cubic-bezier(.4,0,.2,1);
-      pointer-events: auto;
-      user-select: none;
-      display: flex;
-      align-items: center; justify-content: center; flex-direction: column;
-    }
-    #transition-text {
-      min-width: 60vw;
-      cursor: pointer;
-      transition: filter 0.25s;
-      font-family: inherit;
-      font-size: 2.5vw;
-      color: inherit;
-      font-weight: inherit;
-      letter-spacing: inherit;
-      line-height: inherit;
-      text-align: inherit;
-      text-shadow: inherit;
-      user-select: none;
-    }
-    #transition-mask.ready #transition-text {
-      filter: brightness(0.7);
-    }
-    #final-panel {
-      position: fixed;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 2000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.8s cubic-bezier(.4,0,.2,1);
-    }
-    #final-typewriter-box {
-      width: 88vw; max-width: 900px; min-width:150px;
-      max-height: 88vh;
-      background: #fff;
-      border-radius: 0;
-      padding: 0vw 0vw 0vw 0vw;
-      box-shadow: none;
-      font-family: inherit;
-      font-size: inherit;
-      color: inherit;
-      font-weight: inherit;
-      letter-spacing: inherit;
-      line-height: inherit;
-      text-align: inherit;
-      word-break: break-word;
-      white-space: pre-wrap;
-      position: relative;
-      overflow: visible;
-      box-sizing: border-box;
-      text-shadow: inherit;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    #final-typewriter-content {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      font-size: inherit;
-      color: inherit;
-      font-weight: inherit;
-      letter-spacing: inherit;
-      line-height: inherit;
-      text-align: inherit;
-      text-shadow: inherit;
-      white-space: pre-line;
-      min-height: 40vh;
-      background: #fff;
-      cursor: pointer;
-    }
-    .type-line {
-      font-family: inherit;
-      font-size: inherit;
-      color: inherit;
-      font-weight: inherit;
-      letter-spacing: inherit;
-      line-height: inherit;
-      text-align: inherit;
-      text-shadow: inherit;
-      margin: 0.25vw 0;
-      user-select: none;
-    }
-    .scatter-char {
-      display: inline-block;
-      transition: opacity 1s cubic-bezier(.4,0,.2,1), transform 1s cubic-bezier(.4,0,.2,1);
-      will-change: opacity, transform;
-    }
-    .scatter-char.scatter {
-      opacity: 0;
-      transform: translateY(-4vw) scale(1.2) rotate(-13deg);
-      pointer-events: none;
-    }
-    .scatter-line {
-      display: block;
-      width: 100%;
-      text-align: center;
-      margin: 0.25vw 0;
-    }
-    .final-center {
-      position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 10;
-    }
-    .final-center .type-line {
-      font-size: 2.6vw;
-      font-weight: bold;
-      margin: 0.8vw 0 0 0;
-      letter-spacing: 0.14em;
-    }
+    .anim-img { width: 100vw; height: 100vh; object-fit: contain; display: block; position: fixed; left: 0; top: 0; z-index: 10;
+      opacity: 0; transition: opacity 0.6s cubic-bezier(.4,0,.2,1); background: #000;}
+    #transition-mask { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1000; background: #fff;
+      opacity: 1; transition: opacity 0.36s cubic-bezier(.4,0,.2,1); pointer-events: auto; user-select: none; display: flex;
+      align-items: center; justify-content: center; flex-direction: column;}
+    #transition-text { min-width: 60vw; cursor: pointer; transition: filter 0.25s; font-family: inherit; font-size: 2.5vw;
+      color: inherit; font-weight: inherit; letter-spacing: inherit; line-height: inherit; text-align: inherit;
+      text-shadow: inherit; user-select: none;}
+    #transition-mask.ready #transition-text { filter: brightness(0.7);}
+    #final-panel { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; background: #fff; display: flex;
+      align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none;
+      transition: opacity 0.8s cubic-bezier(.4,0,.2,1);}
+    #final-typewriter-box { width: 88vw; max-width: 900px; min-width:150px; max-height: 88vh; background: #fff; border-radius: 0;
+      padding: 0vw 0vw 0vw 0vw; box-shadow: none; font-family: inherit; font-size: inherit; color: inherit;
+      font-weight: inherit; letter-spacing: inherit; line-height: inherit; text-align: inherit; word-break: break-word;
+      white-space: pre-wrap; position: relative; overflow: visible; box-sizing: border-box; text-shadow: inherit;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;}
+    #final-typewriter-content { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: inherit; font-size: inherit; color: inherit; font-weight: inherit; letter-spacing: inherit; line-height: inherit;
+      text-align: inherit; text-shadow: inherit; white-space: pre-line; min-height: 40vh; background: #fff; cursor: pointer;}
+    .type-line { font-family: inherit; font-size: inherit; color: inherit; font-weight: inherit; letter-spacing: inherit;
+      line-height: inherit; text-align: inherit; text-shadow: inherit; margin: 0.25vw 0; user-select: none;}
+    .scatter-char { display: inline-block; transition: opacity 1s cubic-bezier(.4,0,.2,1), transform 1s cubic-bezier(.4,0,.2,1);
+      will-change: opacity, transform;}
+    .scatter-char.scatter { opacity: 0; transform: translateY(-4vw) scale(1.2) rotate(-13deg); pointer-events: none;}
+    .scatter-line { display: block; width: 100%; text-align: center; margin: 0.25vw 0;}
+    .final-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 100vw; display: flex;
+      flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 10;}
+    .final-center .type-line { font-size: 2.6vw; font-weight: bold; margin: 0.8vw 0 0 0; letter-spacing: 0.14em;}
     @media (max-width: 800px) {
-      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text {
-        font-size: 4vw !important;
-      }
+      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text { font-size: 4vw !important;}
       .final-center .type-line { font-size: 5vw !important; }
     }
     @media (max-width: 480px) {
-      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text {
-        font-size: 5vw !important;
-      }
+      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text { font-size: 5vw !important;}
       .final-center .type-line { font-size: 6vw !important; }
     }
   </style>
@@ -165,56 +52,24 @@
 <body>
   <audio id="music1" src="music1.mp3"></audio>
   <audio id="music2" src="music2.mp3"></audio>
-  <div id="transition-mask">
-    <div id="transition-text"></div>
-  </div>
+  <div id="transition-mask"><div id="transition-text"></div></div>
   <img id="anim1" class="anim-img" src="" alt="逐帧动画1">
   <img id="anim2" class="anim-img" src="" alt="逐帧动画2">
   <img id="anim3" class="anim-img" src="" alt="逐帧动画3">
   <div id="final-panel">
-    <div id="final-typewriter-box">
-      <div id="final-typewriter-content"></div>
-    </div>
+    <div id="final-typewriter-box"><div id="final-typewriter-content"></div></div>
     <div id="final-center-text" class="final-center" style="display:none;"></div>
   </div>
   <script>
-    // 无标点版内容
+    // 文本内容
     const finalText = [
-      "我知道你有自己相信的事情",
-      "有自己喜欢的东西",
-      "有必须要去做的功课",
-      "但不要着急",
-      "也不要再夜里偷偷难过",
-      "因为你都可以的",
-      "你是明亮的",
-      "不曾出现的那种明亮",
-      "无论站在哪里",
-      "都会发光",
-      "不要怀疑自己",
-      "不要说丧气的话",
-      "就像你说的那样",
-      "绿宝石始终是绿宝石",
-      "不会因为什么而改变",
-      "你不必追逐星光",
-      "因为群星都会为你闪耀"
+      "我知道你有自己相信的事情", "有自己喜欢的东西", "有必须要去做的功课", "但不要着急", "也不要再夜里偷偷难过",
+      "因为你都可以的", "你是明亮的", "不曾出现的那种明亮", "无论站在哪里", "都会发光", "不要怀疑自己", "不要说丧气的话",
+      "就像你说的那样", "绿宝石始终是绿宝石", "不会因为什么而改变", "你不必追逐星光", "因为群星都会为你闪耀"
     ];
-    const startLines = [
-      "今天是个特别的日子",
-      "听说会有流星"
-    ];
-    const firstAnimEndLines = [
-      "想要看流星吗",
-      "想要许愿吗",
-      "那就去追吧"
-    ];
-    const secondAnimEndLines = [
-      "跌到了吗",
-      "没追上吗",
-      "流星好像要消失了",
-      "别伤心",
-      "因为"
-    ];
-
+    const startLines = ["今天是个特别的日子","听说会有流星"];
+    const firstAnimEndLines = ["想要看流星吗", "想要许愿吗", "那就去追吧"];
+    const secondAnimEndLines = ["跌到了吗", "没追上吗", "流星好像要消失了", "别伤心", "因为"];
     // DOM
     const music1 = document.getElementById('music1');
     const music2 = document.getElementById('music2');
@@ -226,11 +81,33 @@
     const finalPanel = document.getElementById('final-panel');
     const finalContent = document.getElementById('final-typewriter-content');
     const finalCenterText = document.getElementById('final-center-text');
-
-    // 音乐2暂停用的标志
     let music2WasPausedByStep = false;
 
-    // 打字机通用函数：每行逐字出现
+    // 支持平铺多文件夹的图片路径
+    function getImgPath(basePrefix, frame) {
+      // basePrefix: "images1", "images2", ...
+      let folder = `${basePrefix}-${Math.floor((frame - 1) / 100) + 1}`;
+      let pic = ((frame - 1) % 100) + 1;
+      return `${folder}/img (${pic}).png`;
+    }
+    function detectFrameCount(prefix, cb) {
+      let idx = 1;
+      function tryNext() {
+        const img = new window.Image();
+        let timeout = setTimeout(() => { img.src = ""; cb(idx-1); }, 300);
+        img.onload = () => { clearTimeout(timeout); idx++; tryNext(); };
+        img.onerror = () => { clearTimeout(timeout); cb(idx-1); };
+        img.src = getImgPath(prefix, idx);
+      }
+      tryNext();
+    }
+    let animConfig = [
+      {imgPrefix: "images1",  interval: 120, music: music1, frameCount: null},
+      {imgPrefix: "images2",  interval: 120, music: music2, frameCount: null},
+      {imgPrefix: "images3",  interval: 40,  music: music2, frameCount: null}
+    ];
+
+    // 打字机通用函数
     async function typeLines({lines, container, lineClass="type-line", perCharDelay=130, perLineDelay=320, onComplete}) {
       container.innerHTML = "";
       for (let i = 0; i < lines.length; i++) {
@@ -246,26 +123,6 @@
       if (typeof onComplete === "function") onComplete();
     }
 
-    // 帧数检测（自动检测图片帧数，带超时，防止卡顿）
-    function detectFrameCount(prefix, cb) {
-      let idx = 1;
-      function tryNext() {
-        const img = new window.Image();
-        let timeout = setTimeout(() => { img.src = ""; cb(idx-1); }, 300); // 300ms超时
-        img.onload = () => { clearTimeout(timeout); idx++; tryNext(); };
-        img.onerror = () => { clearTimeout(timeout); cb(idx-1); };
-        img.src = `${prefix}${idx}).png`;
-      }
-      tryNext();
-    }
-    // 动画配置（interval 可自定义）
-    let animConfig = [
-      {imgPrefix: "images1/img (",  interval: 120, music: music1, frameCount: null},
-      {imgPrefix: "images2/img (",  interval: 120, music: music2, frameCount: null},
-      {imgPrefix: "images3/img (",  interval: 40,  music: music2, frameCount: null}
-    ];
-
-    // 自动流程
     function startExperience() {
       [music1, music2].forEach(aud=>{
         try { aud.play(); aud.pause(); aud.currentTime=0; aud.volume=0.18; } catch(e){}
@@ -285,7 +142,6 @@
       });
     }
 
-    // 自动弹窗，文字打字后需点击【任意位置】才进入下一步
     function showTransitionMaskWithTextLines(lines, cb) {
       transitionText.innerHTML = "";
       transitionMask.style.background = "#fff";
@@ -300,7 +156,7 @@
         hideTransitionMask();
         window.removeEventListener("click", proceedHandler);
         window.removeEventListener("touchstart", proceedHandler);
-        setTimeout(cb, 20); // 立即衔接下一步
+        setTimeout(cb, 20);
       }
       typeLines({
         lines,
@@ -312,7 +168,6 @@
           setTimeout(()=>{
             ready = true;
             transitionMask.classList.add("ready");
-            // 监听整个window，任意区域都可点击
             window.addEventListener("click", proceedHandler, {once:true});
             window.addEventListener("touchstart", proceedHandler, {once:true});
           }, 10);
@@ -329,11 +184,11 @@
       anim1.style.opacity = "1";
       anim2.style.opacity = "0";
       anim3.style.opacity = "0";
-      let cfg = animConfig[0], total = cfg.frameCount, interval = cfg.interval;
+      let cfg = animConfig[0], interval = cfg.interval;
       let cur = 1;
       try{ cfg.music.currentTime=0; cfg.music.volume=0.18; cfg.music.play(); }catch(e){}
       function showNextFrame() {
-        anim1.src = `${cfg.imgPrefix}${cur}).png`;
+        anim1.src = getImgPath(cfg.imgPrefix, cur);
         anim1.onerror = function() {
           anim1.onerror = null;
           anim1.style.opacity = "0";
@@ -350,8 +205,7 @@
       showNextFrame();
     }
 
-    // 音乐淡出工具
-    function fadeOutAudio(audio, duration = 1000, pauseAfter = true) { // 1s 淡出
+    function fadeOutAudio(audio, duration = 1000, pauseAfter = true) {
       if (!audio) return;
       let start = Date.now();
       let origVolume = audio.volume;
@@ -374,16 +228,15 @@
       anim1.style.opacity = "0";
       anim2.style.opacity = "1";
       anim3.style.opacity = "0";
-      let cfg = animConfig[1], total = cfg.frameCount, interval = cfg.interval;
+      let cfg = animConfig[1], interval = cfg.interval;
       let cur = 1;
       try{ cfg.music.volume=0.18; cfg.music.play(); }catch(e){}
       music2WasPausedByStep = false;
       function showNextFrame() {
-        anim2.src = `${cfg.imgPrefix}${cur}).png`;
+        anim2.src = getImgPath(cfg.imgPrefix, cur);
         anim2.onerror = function() {
           anim2.onerror = null;
           anim2.style.opacity = "0";
-          // 音乐淡出，1秒后暂停并标记
           fadeOutAudio(music2, 1000, true);
           music2WasPausedByStep = true;
           setTimeout(()=>{
@@ -406,7 +259,6 @@
       finalPanel.style.pointerEvents = "auto";
       finalContent.innerHTML = "";
       finalCenterText.style.display = "none";
-      // 打字完成后，5s后进入飘散
       typeLines({
         lines: finalText,
         container: finalContent,
@@ -419,13 +271,10 @@
       });
     }
 
-    // 飘散动画（所有文字都消失，不再显示最后一行）
     function startScatterFinalText() {
-      // 逐字包裹所有行
       const lines = Array.from(finalContent.querySelectorAll('.type-line'));
       if (lines.length < 1) return;
       const toScatter = lines;
-      // 包裹每个字
       toScatter.forEach(line => {
         let txt = line.textContent;
         line.innerHTML = "";
@@ -437,7 +286,6 @@
         }
         line.classList.add("scatter-line");
       });
-      // 定时逐字飘散（慢版）
       let chars = [];
       toScatter.forEach(line => {
         chars.push(...line.querySelectorAll('.scatter-char'));
@@ -448,7 +296,6 @@
           span.classList.add("scatter");
         }, idx * delayPerChar);
       });
-      // 所有都飘散完后，隐藏全部文字，不再显示结尾文字
       setTimeout(() => {
         toScatter.forEach(line => line.style.display = "none");
         finalCenterText.style.display = "none";
@@ -459,9 +306,8 @@
       anim1.style.opacity = "0";
       anim2.style.opacity = "0";
       anim3.style.opacity = "1";
-      let cfg = animConfig[2], total = cfg.frameCount, interval = cfg.interval;
+      let cfg = animConfig[2], interval = cfg.interval;
       let cur = 1;
-      // 如果第二段动画暂停了music2（由步骤暂停），则继续播放
       if (music2WasPausedByStep) {
         try {
           music2.volume = 0.18;
@@ -472,7 +318,7 @@
         try { cfg.music.volume = 0.18; cfg.music.play(); }catch(e){}
       }
       function showNextFrame3() {
-        anim3.src = `${cfg.imgPrefix}${cur}).png`;
+        anim3.src = getImgPath(cfg.imgPrefix, cur);
         anim3.onerror = function() {
           anim3.onerror = null;
           setTimeout(()=>{
@@ -489,7 +335,6 @@
       showNextFrame3();
     }
 
-    // 开头：等打字动画结束后，点击屏幕任意一点就开始
     window.addEventListener('DOMContentLoaded', () => {
       typeLines({
         lines: startLines,
@@ -498,7 +343,6 @@
         perCharDelay: 130,
         perLineDelay: 350,
         onComplete: () => {
-          // 打字动画结束后才加监听，任意区域都可点
           function startHandler(e) {
             e && e.preventDefault && e.preventDefault();
             e && e.stopPropagation && e.stopPropagation();
