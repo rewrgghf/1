@@ -111,7 +111,7 @@
       line-height: inherit;
       text-align: inherit;
       text-shadow: inherit;
-      margin: 0.25vw 0; /* 行间距缩小 */
+      margin: 0.25vw 0;
       user-select: none;
     }
     .scatter-char {
@@ -128,7 +128,7 @@
       display: block;
       width: 100%;
       text-align: center;
-      margin: 0.25vw 0; /* 行间距缩小 */
+      margin: 0.25vw 0;
     }
     .final-center {
       position: absolute;
@@ -145,7 +145,7 @@
     .final-center .type-line {
       font-size: 2.6vw;
       font-weight: bold;
-      margin: 0.8vw 0 0 0; /* 行间距缩小 */
+      margin: 0.8vw 0 0 0;
       letter-spacing: 0.14em;
     }
     @media (max-width: 800px) {
@@ -351,7 +351,7 @@
     }
 
     // 音乐淡出工具
-    function fadeOutAudio(audio, duration = 1000, pauseAfter = true) { // 修改为1秒
+    function fadeOutAudio(audio, duration = 1000, pauseAfter = true) { // 1s 淡出
       if (!audio) return;
       let start = Date.now();
       let origVolume = audio.volume;
@@ -384,7 +384,7 @@
           anim2.onerror = null;
           anim2.style.opacity = "0";
           // 音乐淡出，1秒后暂停并标记
-          fadeOutAudio(music2, 1000, true);  // ← 只改这里
+          fadeOutAudio(music2, 1000, true);
           music2WasPausedByStep = true;
           setTimeout(()=>{
             showTransitionMaskWithTextLines(secondAnimEndLines, startFrameAnimation3);
@@ -419,13 +419,12 @@
       });
     }
 
-    // 飘散动画
+    // 飘散动画（所有文字都消失，不再显示最后一行）
     function startScatterFinalText() {
-      // 逐字包裹所有行，除了最后一行
+      // 逐字包裹所有行
       const lines = Array.from(finalContent.querySelectorAll('.type-line'));
       if (lines.length < 1) return;
-      const last1 = lines.slice(-1);         // 只保留最后1行
-      const toScatter = lines.slice(0, -1);  // 其余全部飘散
+      const toScatter = lines;
       // 包裹每个字
       toScatter.forEach(line => {
         let txt = line.textContent;
@@ -443,20 +442,16 @@
       toScatter.forEach(line => {
         chars.push(...line.querySelectorAll('.scatter-char'));
       });
-      let delayPerChar = 280; // 慢速
+      let delayPerChar = 280;
       chars.forEach((span, idx) => {
         setTimeout(() => {
           span.classList.add("scatter");
         }, idx * delayPerChar);
       });
-      // 所有都飘散完后，隐藏全部行，仅保留最后一行并居中
+      // 所有都飘散完后，隐藏全部文字，不再显示结尾文字
       setTimeout(() => {
         toScatter.forEach(line => line.style.display = "none");
-        // 提取最后一行的文本
-        const lastLine = last1[0].textContent;
-        finalCenterText.innerHTML =
-          `<div class="type-line">${lastLine}</div>`;
-        finalCenterText.style.display = "flex";
+        finalCenterText.style.display = "none";
       }, chars.length * delayPerChar + 1000);
     }
 
@@ -474,7 +469,7 @@
         } catch(e){}
         music2WasPausedByStep = false;
       } else {
-        try { cfg.music.volume = 0.18; cfg.music.play(); } catch(e){}
+        try { cfg.music.volume = 0.18; cfg.music.play(); }catch(e){}
       }
       function showNextFrame3() {
         anim3.src = `${cfg.imgPrefix}${cur}).png`;
