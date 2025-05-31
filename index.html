@@ -1,99 +1,530 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生日快乐！</title>
+  <meta charset="UTF-8">
+  <title>黑白动画-分步引导效果</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #fff;
+    html, body {
+      width: 100vw; height: 100vh; margin: 0; padding: 0; background: #000; overflow: hidden;
+      font-family: "FZKai-Z03", "KaiTi", "STKaiti", "楷体", "LXGW WenKai", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 2.3vw;
+      color: #222;
+      font-weight: normal;
+      letter-spacing: 0.08em;
+      line-height: 1.33;
       text-align: center;
-      overflow: hidden;
+      text-shadow: none;
+      user-select: none;
     }
-
-    h1 {
-      font-size: 4em;
-      margin-top: 1em;
-      animation: glow 2s ease-in-out infinite alternate;
+    .anim-img {
+      width: 100vw; height: 100vh; object-fit: contain; display: block;
+      position: fixed; left: 0; top: 0; z-index: 10;
+      opacity: 0; transition: opacity 0.6s cubic-bezier(.4,0,.2,1);
+      background: #000;
     }
-
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 10px #fff, 0 0 20px #ff99cc, 0 0 30px #ff3399;
-      }
-      to {
-        text-shadow: 0 0 20px #fff, 0 0 30px #ff6699, 0 0 40px #ff0066;
-      }
+    #transition-mask {
+      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1000;
+      background: #fff;
+      opacity: 1; transition: opacity 0.36s cubic-bezier(.4,0,.2,1);
+      pointer-events: auto;
+      user-select: none;
+      display: flex;
+      align-items: center; justify-content: center; flex-direction: column;
     }
-
-    .cake {
-      font-size: 5em;
-      margin: 20px 0;
-      animation: bounce 1s infinite;
+    #transition-text {
+      min-width: 60vw;
+      cursor: pointer;
+      transition: filter 0.25s;
+      font-family: inherit;
+      font-size: 2.5vw;
+      color: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-align: inherit;
+      text-shadow: inherit;
+      user-select: none;
     }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    #transition-mask.ready #transition-text {
+      filter: brightness(0.7);
     }
-
-    .message {
-      font-size: 1.5em;
-      margin: 20px auto;
-      max-width: 600px;
+    #final-panel {
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s cubic-bezier(.4,0,.2,1);
     }
-
-    .confetti {
+    #final-typewriter-box {
+      width: 88vw; max-width: 900px; min-width:150px;
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 0;
+      padding: 0vw 0vw 0vw 0vw;
+      box-shadow: none;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-align: inherit;
+      word-break: break-word;
+      white-space: pre-wrap;
+      position: relative;
+      overflow: visible;
+      box-sizing: border-box;
+      text-shadow: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #final-typewriter-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-align: inherit;
+      text-shadow: inherit;
+      white-space: pre-line;
+      min-height: 40vh;
+      background: #fff;
+      cursor: pointer;
+    }
+    .type-line {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      text-align: inherit;
+      text-shadow: inherit;
+      margin: 0.25vw 0; /* 行间距缩小 */
+      user-select: none;
+    }
+    .scatter-char {
+      display: inline-block;
+      transition: opacity 1s cubic-bezier(.4,0,.2,1), transform 1s cubic-bezier(.4,0,.2,1);
+      will-change: opacity, transform;
+    }
+    .scatter-char.scatter {
+      opacity: 0;
+      transform: translateY(-4vw) scale(1.2) rotate(-13deg);
+      pointer-events: none;
+    }
+    .scatter-line {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin: 0.25vw 0; /* 行间距缩小 */
+    }
+    .final-center {
       position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #fff;
-      animation: fall 3s linear infinite;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
     }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-10px) rotate(0deg);
-        opacity: 1;
+    .final-center .type-line {
+      font-size: 2.6vw;
+      font-weight: bold;
+      margin: 0.8vw 0 0 0; /* 行间距缩小 */
+      letter-spacing: 0.14em;
+    }
+    @media (max-width: 800px) {
+      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text {
+        font-size: 4vw !important;
       }
-      100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
+      .final-center .type-line { font-size: 5vw !important; }
+    }
+    @media (max-width: 480px) {
+      html, body, #final-typewriter-box, #final-typewriter-content, #transition-text {
+        font-size: 5vw !important;
       }
+      .final-center .type-line { font-size: 6vw !important; }
     }
   </style>
 </head>
 <body>
-
-  <h1>🎉 生日快乐！ 🎉</h1>
-  <div class="cake">🎂</div>
-  <div class="message">
-    愿你的每一天都像今天一样充满快乐、甜蜜与惊喜！<br />
-    感谢你出现在这个世界上，让生活变得更美好！<br /><br />
-    🎈祝你永远年轻，永远热泪盈眶！🎈
+  <audio id="music1" src="music1.mp3"></audio>
+  <audio id="music2" src="music2.mp3"></audio>
+  <div id="transition-mask">
+    <div id="transition-text"></div>
   </div>
-
-  <!-- 播放音乐 -->
-  <audio autoplay loop controls style="margin-top: 30px;">
-    <source src="https://cdn.pixabay.com/download/audio/2022/08/31/audio_05a9f211c6.mp3?filename=happy-birthday-115679.mp3" type="audio/mpeg">
-    你的浏览器不支持音频播放。
-  </audio>
-
-  <!-- 彩带动画效果 -->
+  <img id="anim1" class="anim-img" src="" alt="逐帧动画1">
+  <img id="anim2" class="anim-img" src="" alt="逐帧动画2">
+  <img id="anim3" class="anim-img" src="" alt="逐帧动画3">
+  <div id="final-panel">
+    <div id="final-typewriter-box">
+      <div id="final-typewriter-content"></div>
+    </div>
+    <div id="final-center-text" class="final-center" style="display:none;"></div>
+  </div>
   <script>
-    for (let i = 0; i < 100; i++) {
-      let confetti = document.createElement('div');
-      confetti.className = 'confetti';
-      confetti.style.left = Math.random() * 100 + 'vw';
-      confetti.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-      confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-      confetti.style.opacity = Math.random();
-      document.body.appendChild(confetti);
+    // 无标点版内容
+    const finalText = [
+      "我知道你有自己相信的事情",
+      "有自己喜欢的东西",
+      "有必须要去做的功课",
+      "但不要着急",
+      "也不要再夜里偷偷难过",
+      "因为你都可以的",
+      "你是明亮的",
+      "不曾出现的那种明亮",
+      "无论站在哪里",
+      "都会发光",
+      "不要怀疑自己",
+      "不要说丧气的话",
+      "就像你说的那样",
+      "绿宝石始终是绿宝石",
+      "不会因为什么而改变",
+      "你不必追逐星光",
+      "因为群星都会为你闪耀"
+    ];
+    const startLines = [
+      "今天是个特别的日子",
+      "听说会有流星"
+    ];
+    const firstAnimEndLines = [
+      "想要看流星吗",
+      "想要许愿吗",
+      "那就去追吧"
+    ];
+    const secondAnimEndLines = [
+      "跌到了吗",
+      "没追上吗",
+      "流星好像要消失了",
+      "别伤心",
+      "因为"
+    ];
+
+    // DOM
+    const music1 = document.getElementById('music1');
+    const music2 = document.getElementById('music2');
+    const anim1 = document.getElementById('anim1');
+    const anim2 = document.getElementById('anim2');
+    const anim3 = document.getElementById('anim3');
+    const transitionMask = document.getElementById('transition-mask');
+    const transitionText = document.getElementById('transition-text');
+    const finalPanel = document.getElementById('final-panel');
+    const finalContent = document.getElementById('final-typewriter-content');
+    const finalCenterText = document.getElementById('final-center-text');
+
+    // 音乐2暂停用的标志
+    let music2WasPausedByStep = false;
+
+    // 打字机通用函数：每行逐字出现
+    async function typeLines({lines, container, lineClass="type-line", perCharDelay=130, perLineDelay=320, onComplete}) {
+      container.innerHTML = "";
+      for (let i = 0; i < lines.length; i++) {
+        const div = document.createElement("div");
+        div.className = lineClass;
+        container.appendChild(div);
+        for (let j = 0; j < lines[i].length; j++) {
+          div.innerHTML += lines[i][j];
+          await new Promise(res => setTimeout(res, perCharDelay + Math.floor(Math.random()*40)));
+        }
+        await new Promise(res => setTimeout(res, perLineDelay));
+      }
+      if (typeof onComplete === "function") onComplete();
     }
+
+    // 帧数检测（自动检测图片帧数，带超时，防止卡顿）
+    function detectFrameCount(prefix, cb) {
+      let idx = 1;
+      function tryNext() {
+        const img = new window.Image();
+        let timeout = setTimeout(() => { img.src = ""; cb(idx-1); }, 300); // 300ms超时
+        img.onload = () => { clearTimeout(timeout); idx++; tryNext(); };
+        img.onerror = () => { clearTimeout(timeout); cb(idx-1); };
+        img.src = `${prefix}${idx}).png`;
+      }
+      tryNext();
+    }
+    // 动画配置（interval 可自定义）
+    let animConfig = [
+      {imgPrefix: "images1/img (",  interval: 120, music: music1, frameCount: null},
+      {imgPrefix: "images2/img (",  interval: 120, music: music2, frameCount: null},
+      {imgPrefix: "images3/img (",  interval: 40,  music: music2, frameCount: null}
+    ];
+
+    // 自动流程
+    function startExperience() {
+      [music1, music2].forEach(aud=>{
+        try { aud.play(); aud.pause(); aud.currentTime=0; aud.volume=0.18; } catch(e){}
+      });
+      detectFrameCount(animConfig[0].imgPrefix, function(n1){
+        animConfig[0].frameCount = n1;
+        detectFrameCount(animConfig[1].imgPrefix, function(n2){
+          animConfig[1].frameCount = n2;
+          detectFrameCount(animConfig[2].imgPrefix, function(n3){
+            animConfig[2].frameCount = n3;
+            hideTransitionMask();
+            setTimeout(()=>{
+              startFrameAnimation1();
+            }, 120);
+          });
+        });
+      });
+    }
+
+    // 自动弹窗，文字打字后需点击【任意位置】才进入下一步
+    function showTransitionMaskWithTextLines(lines, cb) {
+      transitionText.innerHTML = "";
+      transitionMask.style.background = "#fff";
+      transitionMask.style.display = "flex";
+      transitionMask.style.opacity = "1";
+      transitionMask.style.pointerEvents = "auto";
+      let ready = false;
+      function proceedHandler(e) {
+        if (!ready) return;
+        e && e.preventDefault && e.stopPropagation && e.stopPropagation();
+        transitionMask.classList.remove("ready");
+        hideTransitionMask();
+        window.removeEventListener("click", proceedHandler);
+        window.removeEventListener("touchstart", proceedHandler);
+        setTimeout(cb, 20); // 立即衔接下一步
+      }
+      typeLines({
+        lines,
+        container: transitionText,
+        lineClass: "type-line",
+        perCharDelay: 130,
+        perLineDelay: 320,
+        onComplete: ()=>{
+          setTimeout(()=>{
+            ready = true;
+            transitionMask.classList.add("ready");
+            // 监听整个window，任意区域都可点击
+            window.addEventListener("click", proceedHandler, {once:true});
+            window.addEventListener("touchstart", proceedHandler, {once:true});
+          }, 10);
+        }
+      });
+    }
+    function hideTransitionMask() {
+      transitionMask.style.opacity = "0";
+      transitionMask.style.pointerEvents = "none";
+      setTimeout(()=>{transitionMask.style.display="none";}, 400);
+    }
+
+    function startFrameAnimation1() {
+      anim1.style.opacity = "1";
+      anim2.style.opacity = "0";
+      anim3.style.opacity = "0";
+      let cfg = animConfig[0], total = cfg.frameCount, interval = cfg.interval;
+      let cur = 1;
+      try{ cfg.music.currentTime=0; cfg.music.volume=0.18; cfg.music.play(); }catch(e){}
+      function showNextFrame() {
+        anim1.src = `${cfg.imgPrefix}${cur}).png`;
+        anim1.onerror = function() {
+          anim1.onerror = null;
+          anim1.style.opacity = "0";
+          try{cfg.music.pause();cfg.music.currentTime=0;}catch(e){}
+          setTimeout(()=>{
+            showTransitionMaskWithTextLines(firstAnimEndLines, startFrameAnimation2);
+          }, 120);
+        };
+        anim1.onload = function() {
+          anim1.onload = null;
+          setTimeout(() => { cur++; showNextFrame(); }, interval);
+        };
+      }
+      showNextFrame();
+    }
+
+    // 音乐淡出工具
+    function fadeOutAudio(audio, duration = 1000, pauseAfter = true) { // 修改为1秒
+      if (!audio) return;
+      let start = Date.now();
+      let origVolume = audio.volume;
+      function fade() {
+        let now = Date.now();
+        let elapsed = now - start;
+        let progress = Math.min(elapsed / duration, 1);
+        audio.volume = origVolume * (1 - progress);
+        if (progress < 1) {
+          requestAnimationFrame(fade);
+        } else {
+          audio.volume = 0;
+          if (pauseAfter) audio.pause();
+        }
+      }
+      fade();
+    }
+
+    function startFrameAnimation2() {
+      anim1.style.opacity = "0";
+      anim2.style.opacity = "1";
+      anim3.style.opacity = "0";
+      let cfg = animConfig[1], total = cfg.frameCount, interval = cfg.interval;
+      let cur = 1;
+      try{ cfg.music.volume=0.18; cfg.music.play(); }catch(e){}
+      music2WasPausedByStep = false;
+      function showNextFrame() {
+        anim2.src = `${cfg.imgPrefix}${cur}).png`;
+        anim2.onerror = function() {
+          anim2.onerror = null;
+          anim2.style.opacity = "0";
+          // 音乐淡出，1秒后暂停并标记
+          fadeOutAudio(music2, 1000, true);  // ← 只改这里
+          music2WasPausedByStep = true;
+          setTimeout(()=>{
+            showTransitionMaskWithTextLines(secondAnimEndLines, startFrameAnimation3);
+          }, 120);
+        };
+        anim2.onload = function() {
+          anim2.onload = null;
+          setTimeout(() => { cur++; showNextFrame(); }, interval);
+        };
+      }
+      showNextFrame();
+    }
+
+    function showFinalPanelTypewriter() {
+      anim1.style.opacity = "0";
+      anim2.style.opacity = "0";
+      anim3.style.opacity = "0";
+      finalPanel.style.opacity = "1";
+      finalPanel.style.pointerEvents = "auto";
+      finalContent.innerHTML = "";
+      finalCenterText.style.display = "none";
+      // 打字完成后，5s后进入飘散
+      typeLines({
+        lines: finalText,
+        container: finalContent,
+        lineClass: "type-line",
+        perCharDelay: 110,
+        perLineDelay: 320,
+        onComplete: ()=>{
+          setTimeout(()=>{ startScatterFinalText(); }, 5000);
+        }
+      });
+    }
+
+    // 飘散动画
+    function startScatterFinalText() {
+      // 逐字包裹所有行，除了最后一行
+      const lines = Array.from(finalContent.querySelectorAll('.type-line'));
+      if (lines.length < 1) return;
+      const last1 = lines.slice(-1);         // 只保留最后1行
+      const toScatter = lines.slice(0, -1);  // 其余全部飘散
+      // 包裹每个字
+      toScatter.forEach(line => {
+        let txt = line.textContent;
+        line.innerHTML = "";
+        for (let i = 0; i < txt.length; ++i) {
+          let span = document.createElement("span");
+          span.className = "scatter-char";
+          span.textContent = txt[i];
+          line.appendChild(span);
+        }
+        line.classList.add("scatter-line");
+      });
+      // 定时逐字飘散（慢版）
+      let chars = [];
+      toScatter.forEach(line => {
+        chars.push(...line.querySelectorAll('.scatter-char'));
+      });
+      let delayPerChar = 280; // 慢速
+      chars.forEach((span, idx) => {
+        setTimeout(() => {
+          span.classList.add("scatter");
+        }, idx * delayPerChar);
+      });
+      // 所有都飘散完后，隐藏全部行，仅保留最后一行并居中
+      setTimeout(() => {
+        toScatter.forEach(line => line.style.display = "none");
+        // 提取最后一行的文本
+        const lastLine = last1[0].textContent;
+        finalCenterText.innerHTML =
+          `<div class="type-line">${lastLine}</div>`;
+        finalCenterText.style.display = "flex";
+      }, chars.length * delayPerChar + 1000);
+    }
+
+    function startFrameAnimation3() {
+      anim1.style.opacity = "0";
+      anim2.style.opacity = "0";
+      anim3.style.opacity = "1";
+      let cfg = animConfig[2], total = cfg.frameCount, interval = cfg.interval;
+      let cur = 1;
+      // 如果第二段动画暂停了music2（由步骤暂停），则继续播放
+      if (music2WasPausedByStep) {
+        try {
+          music2.volume = 0.18;
+          music2.play();
+        } catch(e){}
+        music2WasPausedByStep = false;
+      } else {
+        try { cfg.music.volume = 0.18; cfg.music.play(); } catch(e){}
+      }
+      function showNextFrame3() {
+        anim3.src = `${cfg.imgPrefix}${cur}).png`;
+        anim3.onerror = function() {
+          anim3.onerror = null;
+          setTimeout(()=>{
+            finalPanel.style.opacity = "1";
+            finalPanel.style.pointerEvents = "auto";
+            showFinalPanelTypewriter();
+          }, 120);
+        };
+        anim3.onload = function() {
+          anim3.onload = null;
+          setTimeout(() => { cur++; showNextFrame3(); }, interval);
+        };
+      }
+      showNextFrame3();
+    }
+
+    // 开头：等打字动画结束后，点击屏幕任意一点就开始
+    window.addEventListener('DOMContentLoaded', () => {
+      typeLines({
+        lines: startLines,
+        container: transitionText,
+        lineClass: "type-line",
+        perCharDelay: 130,
+        perLineDelay: 350,
+        onComplete: () => {
+          // 打字动画结束后才加监听，任意区域都可点
+          function startHandler(e) {
+            e && e.preventDefault && e.preventDefault();
+            e && e.stopPropagation && e.stopPropagation();
+            window.removeEventListener("click", startHandler);
+            window.removeEventListener("touchstart", startHandler);
+            transitionMask.classList.remove("ready");
+            startExperience();
+          }
+          setTimeout(() => {
+            transitionMask.classList.add("ready");
+            window.addEventListener("click", startHandler, {once:true});
+            window.addEventListener("touchstart", startHandler, {once:true});
+          }, 80);
+        }
+      });
+    });
+
+    anim1.style.opacity = "0";
+    anim2.style.opacity = "0";
+    anim3.style.opacity = "0";
+    finalPanel.style.opacity = "0";
   </script>
 </body>
 </html>
